@@ -16,7 +16,7 @@ const CelestialInkShader = () => {
 
         const scene = new THREE.Scene();
         const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-        const clock = new THREE.Clock();
+        const timer = new THREE.Timer();
 
         const vertexShader = `
       void main() {
@@ -59,10 +59,10 @@ const CelestialInkShader = () => {
       void main() {
         vec2 uv = (gl_FragCoord.xy - 0.5 * iResolution.xy) / iResolution.y;
         vec2 mouse = (iMouse - 0.5 * iResolution.xy) / iResolution.y;
-        float t = iTime * 0.1;
+        float t = iTime * 0.18;
 
         float d = length(uv - mouse);
-        float ripple = 1.0 - smoothstep(0.0, 0.3, d);
+        float ripple = 1.0 - smoothstep(0.0, 0.45, d);
 
         float angle = t * 0.5;
         mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
@@ -70,14 +70,14 @@ const CelestialInkShader = () => {
 
         float pattern = fbm(p * 3.0 + t);
         pattern -= fbm(p * 6.0 - t * 0.5) * 0.3;
-        pattern += ripple * 0.5;
+        pattern += ripple * 0.9;
 
-        vec3 c1 = vec3(0.02, 0.02, 0.03);
-        vec3 c2 = vec3(0.16, 0.16, 0.18);
-        vec3 highlight = vec3(0.28, 0.28, 0.32);
+        vec3 c1 = vec3(0.03, 0.0, 0.01);
+        vec3 c2 = vec3(0.40, 0.04, 0.10);
+        vec3 highlight = vec3(0.98, 0.20, 0.28);
 
         vec3 color = mix(c1, c2, smoothstep(0.4, 0.6, pattern));
-        float hl = pow(smoothstep(0.6, 0.8, pattern), 2.0);
+        float hl = pow(smoothstep(0.58, 0.8, pattern), 1.8);
         color = mix(color, highlight, hl);
 
         gl_FragColor = vec4(color, 1.0);
@@ -120,7 +120,8 @@ const CelestialInkShader = () => {
         window.addEventListener('mousemove', onMouseMove);
 
         renderer.setAnimationLoop(() => {
-            uniforms.iTime.value = clock.getElapsedTime();
+          timer.update();
+          uniforms.iTime.value = timer.getElapsed();
             renderer.render(scene, camera);
         });
 
@@ -149,7 +150,8 @@ const CelestialInkShader = () => {
                 left: 0,
                 width: '100vw',
                 height: '100vh',
-                zIndex: -1,
+                zIndex: 0,
+                opacity: 0.92,
                 pointerEvents: 'none',
             }}
             aria-label="Celestial Ink animated background"

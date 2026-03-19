@@ -33,6 +33,7 @@ Required variables:
 - `SMTP_USER`
 - `SMTP_PASS`
 - `SMTP_FROM`
+- `SITE_URL` (for absolute email logo URL, e.g. `http://localhost:3000` locally)
 - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
 - `GOOGLE_PRIVATE_KEY`
 - `GOOGLE_SHEET_ID`

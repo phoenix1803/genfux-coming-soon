@@ -66,11 +66,7 @@ export function WaitlistForm() {
 
             setState('success');
             setContact('');
-            setSuccessMessage(
-                body.sentEmail
-                    ? 'You are in. Check your inbox for the thank-you mail.'
-                    : 'You are in. We will contact you soon.'
-            );
+            setSuccessMessage('You are in.');
         } catch (submitError) {
             setState('error');
             setError(
@@ -82,7 +78,7 @@ export function WaitlistForm() {
     return (
         <form
             onSubmit={onSubmit}
-            className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-gradient-to-b from-white/10 to-white/5 p-4 shadow-[0_0_80px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:p-5 md:p-8"
+            className="mx-auto w-full max-w-xl rounded-3xl border border-white/20 bg-gradient-to-b from-zinc-800/70 via-zinc-900/60 to-black/85 p-4 shadow-[0_0_80px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:p-5 md:p-8"
         >
             <label className="flex flex-col gap-2 text-xs uppercase tracking-[0.18em] text-zinc-300 sm:text-sm">
                 Email or phone

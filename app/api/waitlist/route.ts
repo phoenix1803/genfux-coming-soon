@@ -89,6 +89,12 @@ const sendThankYou = async (email: string) => {
         throw new Error('SMTP credentials are missing.');
     }
 
+    const siteUrl =
+        process.env.SITE_URL ||
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
+    const logoUrl = siteUrl ? `${siteUrl.replace(/\/$/, '')}/logo-main.jpeg` : '';
+
     const transporter = nodemailer.createTransport({
         host,
         port,
@@ -99,12 +105,46 @@ const sendThankYou = async (email: string) => {
     await transporter.sendMail({
         from,
         to: email,
-        subject: 'You are on the Genfux waitlist',
+                subject: 'Genfux — You are in',
         html: `
-      <div style="font-family:Inter,Arial,sans-serif;max-width:560px;padding:20px;background:#050505;color:#f5f5f5;border:1px solid #232323;border-radius:16px;">
-        <h1 style="font-size:24px;margin:0 0 12px;">You are in.</h1>
-        <p style="line-height:1.6;margin:0;">Thanks for joining the Genfux waitlist. We will reach out soon with early access.</p>
-      </div>
+            <div style="margin:0;padding:24px;background:#020202;font-family:Inter,Arial,sans-serif;color:#f5f5f5;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:620px;margin:0 auto;border-radius:24px;overflow:hidden;background:#090909;border:1px solid #242424;">
+                    <tr>
+                        <td style="padding:0;background:linear-gradient(160deg,#0f0f0f 0%,#151515 40%,#0b0b0b 100%);">
+                            <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td style="padding:28px 28px 18px 28px;text-align:center;border-bottom:1px solid #1f1f1f;">
+                                        ${
+                                            logoUrl
+                                                ? `<img src="${logoUrl}" alt="Genfux" width="138" style="display:block;margin:0 auto 12px auto;height:auto;border:0;outline:none;text-decoration:none;" />`
+                                                : '<div style="margin:0 auto 12px auto;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.02em;">Genfux</div>'
+                                        }
+                                        <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#a3a3a3;">Genfux Waitlist</div>
+                                        <h1 style="margin:12px 0 0 0;font-size:38px;line-height:1;font-weight:800;letter-spacing:-0.02em;color:#ffffff;">You are in.</h1>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:24px 28px 28px 28px;">
+                                        <p style="margin:0 0 14px 0;color:#d4d4d8;font-size:16px;line-height:1.7;">
+                                            Thanks for joining the Genfux waitlist.
+                                        </p>
+                                        <p style="margin:0 0 24px 0;color:#d4d4d8;font-size:16px;line-height:1.7;">
+                                            We will reach out soon with early access details.
+                                        </p>
+                                        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                                            <tr>
+                                                <td style="border-radius:999px;background:linear-gradient(140deg,#2c2c2c 0%,#141414 100%);border:1px solid #3a3a3a;padding:11px 22px;">
+                                                    <a href="https://www.instagram.com/genfux.in/" style="color:#ffffff;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;display:inline-block;">Follow Genfux</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
     `,
     });
 };

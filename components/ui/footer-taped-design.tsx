@@ -21,7 +21,7 @@ export const Component = () => {
 
                 <div className="flex items-center gap-3">
                     <a
-                        href="https://instagram.com"
+                        href="https://www.instagram.com/genfux.in/"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Instagram"
