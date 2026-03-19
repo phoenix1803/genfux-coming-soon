@@ -105,7 +105,7 @@ const sendThankYou = async (email: string) => {
     await transporter.sendMail({
         from,
         to: email,
-                subject: 'Genfux — You are in',
+        subject: 'Genfux — You are in',
         html: `
             <div style="margin:0;padding:24px;background:#020202;font-family:Inter,Arial,sans-serif;color:#f5f5f5;">
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:620px;margin:0 auto;border-radius:24px;overflow:hidden;background:#090909;border:1px solid #242424;">
@@ -114,11 +114,10 @@ const sendThankYou = async (email: string) => {
                             <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
                                     <td style="padding:28px 28px 18px 28px;text-align:center;border-bottom:1px solid #1f1f1f;">
-                                        ${
-                                            logoUrl
-                                                ? `<img src="${logoUrl}" alt="Genfux" width="138" style="display:block;margin:0 auto 12px auto;height:auto;border:0;outline:none;text-decoration:none;" />`
-                                                : '<div style="margin:0 auto 12px auto;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.02em;">Genfux</div>'
-                                        }
+                                        ${logoUrl
+                ? `<img src="${logoUrl}" alt="Genfux" width="138" style="display:block;margin:0 auto 12px auto;height:auto;border:0;outline:none;text-decoration:none;" />`
+                : '<div style="margin:0 auto 12px auto;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.02em;">Genfux</div>'
+            }
                                         <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#a3a3a3;">Genfux Waitlist</div>
                                         <h1 style="margin:12px 0 0 0;font-size:38px;line-height:1;font-weight:800;letter-spacing:-0.02em;color:#ffffff;">You are in.</h1>
                                     </td>

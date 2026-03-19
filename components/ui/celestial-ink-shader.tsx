@@ -120,8 +120,8 @@ const CelestialInkShader = () => {
         window.addEventListener('mousemove', onMouseMove);
 
         renderer.setAnimationLoop(() => {
-          timer.update();
-          uniforms.iTime.value = timer.getElapsed();
+            timer.update();
+            uniforms.iTime.value = timer.getElapsed();
             renderer.render(scene, camera);
         });
 
