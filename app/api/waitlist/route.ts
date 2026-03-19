@@ -49,16 +49,16 @@ const getSheetsClient = async () => {
 };
 
 const appendToSheet = async ({
-    email,
-    phone,
+    contact,
+    contactType,
     source,
 }: {
-    email: string;
-    phone: string;
+    contact: string;
+    contactType: 'email' | 'phone';
     source: string;
 }) => {
     const sheetId = process.env.GOOGLE_SHEET_ID;
-    const range = process.env.GOOGLE_SHEET_RANGE || 'Sheet1!A:D';
+    const range = process.env.GOOGLE_SHEET_RANGE || 'Sheet1!A1:D1';
 
     if (!sheetId) {
         throw new Error('GOOGLE_SHEET_ID is missing.');
@@ -69,9 +69,11 @@ const appendToSheet = async ({
     await sheets.spreadsheets.values.append({
         spreadsheetId: sheetId,
         range,
+        insertDataOption: 'INSERT_ROWS',
         valueInputOption: 'USER_ENTERED',
         requestBody: {
-            values: [[new Date().toISOString(), email, phone, source]],
+            majorDimension: 'ROWS',
+            values: [[new Date().toISOString(), contact, contactType, source]],
         },
     });
 };
@@ -93,7 +95,7 @@ const sendThankYou = async (email: string) => {
         process.env.SITE_URL ||
         process.env.NEXT_PUBLIC_SITE_URL ||
         (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '');
-    const logoUrl = siteUrl ? `${siteUrl.replace(/\/$/, '')}/logo-main.jpeg` : '';
+    const logoUrl = siteUrl ? `${siteUrl.replace(/\/$/, '')}/logo-main.png` : '';
 
     const transporter = nodemailer.createTransport({
         host,
@@ -163,11 +165,11 @@ export async function POST(request: Request) {
         const contact = parsed.data.contact;
         const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact);
         const email = isEmail ? contact : '';
-        const phone = isEmail ? '' : contact;
+        const contactType: 'email' | 'phone' = isEmail ? 'email' : 'phone';
 
         await appendToSheet({
-            email,
-            phone,
+            contact,
+            contactType,
             source: 'vercel-nextjs',
         });
 

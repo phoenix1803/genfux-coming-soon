@@ -15,7 +15,7 @@ export default function Home() {
       <header className="sticky top-0 z-20 border-b border-white/10 bg-black px-4 py-3 sm:px-6 sm:py-4">
         <div className="mx-auto flex max-w-6xl items-center justify-center">
           <Image
-            src="/logo-main.jpeg"
+            src="/logo-main.png"
             alt="Genfux"
             width={160}
             height={48}

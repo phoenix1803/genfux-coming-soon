@@ -10,7 +10,7 @@ export const Component = () => {
             <div className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md md:p-6">
                 <Link href="/" aria-label="Genfux home" className="inline-flex items-center">
                     <Image
-                        src="/logo-main.jpeg"
+                        src="/logo-main.png"
                         alt="Genfux logo"
                         width={120}
                         height={40}
