@@ -67,9 +67,10 @@ Required variables:
 Columns appended by API route:
 
 1. Timestamp (ISO)
-2. Email
-3. Phone
-4. Source tag
+2. Name
+3. Email
+4. Phone (optional)
+5. Source tag
 
 ## Vercel deployment notes
 

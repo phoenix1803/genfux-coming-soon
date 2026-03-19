@@ -7,26 +7,42 @@ export const runtime = 'nodejs';
 
 const payloadSchema = z
     .object({
-        contact: z.string().trim(),
+        name: z.string().trim(),
+        email: z.string().trim(),
+        phone: z.string().trim().optional().default(''),
     })
     .superRefine((value, context) => {
-        if (!value.contact) {
+        if (!value.name) {
             context.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: 'Enter an email or phone number.',
-                path: ['contact'],
+                message: 'Enter your name.',
+                path: ['name'],
+            });
+        }
+
+        if (!value.email) {
+            context.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'Enter your email.',
+                path: ['email'],
             });
             return;
         }
 
-        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.contact);
-        const isPhone = /^\+?[1-9]\d{7,14}$/.test(value.contact);
-        if (!isEmail && !isPhone) {
+        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.email);
+        if (!isEmail) {
             context.addIssue({
                 code: z.ZodIssueCode.custom,
-                message:
-                    'Enter a valid email or phone number (e.g. you@example.com or +14155552671).',
-                path: ['contact'],
+                message: 'Enter a valid email address.',
+                path: ['email'],
+            });
+        }
+
+        if (value.phone && !/^\+?[1-9]\d{7,14}$/.test(value.phone)) {
+            context.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'Enter a valid phone number (e.g. +14155552671).',
+                path: ['phone'],
             });
         }
     });
@@ -49,16 +65,18 @@ const getSheetsClient = async () => {
 };
 
 const appendToSheet = async ({
-    contact,
-    contactType,
+    name,
+    email,
+    phone,
     source,
 }: {
-    contact: string;
-    contactType: 'email' | 'phone';
+    name: string;
+    email: string;
+    phone: string;
     source: string;
 }) => {
     const sheetId = process.env.GOOGLE_SHEET_ID;
-    const range = process.env.GOOGLE_SHEET_RANGE || 'Sheet1!A1:D1';
+    const range = process.env.GOOGLE_SHEET_RANGE || 'Sheet1!A1:E1';
 
     if (!sheetId) {
         throw new Error('GOOGLE_SHEET_ID is missing.');
@@ -73,14 +91,12 @@ const appendToSheet = async ({
         valueInputOption: 'USER_ENTERED',
         requestBody: {
             majorDimension: 'ROWS',
-            values: [[new Date().toISOString(), contact, contactType, source]],
+            values: [[new Date().toISOString(), name, email, phone, source]],
         },
     });
 };
 
 const sendThankYou = async (email: string) => {
-    if (!email) return;
-
     const host = process.env.SMTP_HOST;
     const port = Number(process.env.SMTP_PORT || '587');
     const user = process.env.SMTP_USER;
@@ -116,10 +132,11 @@ const sendThankYou = async (email: string) => {
                             <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
                                     <td style="padding:28px 28px 18px 28px;text-align:center;border-bottom:1px solid #1f1f1f;">
-                                        ${logoUrl
-                ? `<img src="${logoUrl}" alt="Genfux" width="138" style="display:block;margin:0 auto 12px auto;height:auto;border:0;outline:none;text-decoration:none;" />`
-                : '<div style="margin:0 auto 12px auto;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.02em;">Genfux</div>'
-            }
+                                        ${
+                                            logoUrl
+                                                ? `<img src="${logoUrl}" alt="Genfux" width="138" style="display:block;margin:0 auto 12px auto;height:auto;border:0;outline:none;text-decoration:none;" />`
+                                                : '<div style="margin:0 auto 12px auto;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.02em;">Genfux</div>'
+                                        }
                                         <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:#a3a3a3;">Genfux Waitlist</div>
                                         <h1 style="margin:12px 0 0 0;font-size:38px;line-height:1;font-weight:800;letter-spacing:-0.02em;color:#ffffff;">You are in.</h1>
                                     </td>
@@ -132,13 +149,6 @@ const sendThankYou = async (email: string) => {
                                         <p style="margin:0 0 24px 0;color:#d4d4d8;font-size:16px;line-height:1.7;">
                                             We will reach out soon with early access details.
                                         </p>
-                                        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-                                            <tr>
-                                                <td style="border-radius:999px;background:linear-gradient(140deg,#2c2c2c 0%,#141414 100%);border:1px solid #3a3a3a;padding:11px 22px;">
-                                                    <a href="https://www.instagram.com/genfux.in/" style="color:#ffffff;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;display:inline-block;">Follow Genfux</a>
-                                                </td>
-                                            </tr>
-                                        </table>
                                     </td>
                                 </tr>
                             </table>
@@ -162,23 +172,20 @@ export async function POST(request: Request) {
             );
         }
 
-        const contact = parsed.data.contact;
-        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact);
-        const email = isEmail ? contact : '';
-        const contactType: 'email' | 'phone' = isEmail ? 'email' : 'phone';
+        const name = parsed.data.name;
+        const email = parsed.data.email;
+        const phone = parsed.data.phone;
 
         await appendToSheet({
-            contact,
-            contactType,
+            name,
+            email,
+            phone,
             source: 'vercel-nextjs',
         });
 
         await sendThankYou(email);
 
-        return NextResponse.json(
-            { message: 'Submitted successfully.', sentEmail: Boolean(email) },
-            { status: 200 }
-        );
+        return NextResponse.json({ message: 'Submitted successfully.' }, { status: 200 });
     } catch (error) {
         return NextResponse.json(
             {
