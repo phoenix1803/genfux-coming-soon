@@ -17,7 +17,7 @@ const sora = Sora({
 
 export const metadata: Metadata = {
   title: "Genfux Coming Soon",
-  description: "Dark themed Gen Z style waitlist page for Genfux.",
+  description: "Clothing for The Gen-Z",
   icons: {
     icon: "/logo.ico",
     shortcut: "/logo.ico",
