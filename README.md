@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Genfux Coming Soon
 
-## Getting Started
+Dark, Y2K-style waitlist site built with Next.js (App Router), TypeScript, Tailwind v4, and shadcn-compatible structure.
 
-First, run the development server:
+## Stack and Structure
+
+- Next.js + TypeScript + Tailwind v4
+- shadcn initialized (`components.json` exists)
+- Default component path: `components/ui`
+- Default styles path: `app/globals.css`
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local` from `.env.example`.
 
-## Learn More
+```bash
+cp .env.example .env.local
+```
 
-To learn more about Next.js, take a look at the following resources:
+Required variables:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+- `GOOGLE_PRIVATE_KEY`
+- `GOOGLE_SHEET_ID`
+- `GOOGLE_SHEET_RANGE` (optional, defaults to `Sheet1!A:D`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Gmail SMTP setup (App Password)
 
-## Deploy on Vercel
+1. Use a Google account with 2-Step Verification ON.
+2. Go to Google Account → Security → App passwords.
+3. Create app password (Mail + Other/custom name).
+4. Use:
+	- `SMTP_HOST=smtp.gmail.com`
+	- `SMTP_PORT=587`
+	- `SMTP_USER=your@gmail.com`
+	- `SMTP_PASS=<16-char app password>`
+	- `SMTP_FROM=your@gmail.com`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Google Sheets append setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Create a Google Cloud project.
+2. Enable Google Sheets API.
+3. Create a Service Account.
+4. Generate JSON key for the service account.
+5. Share your target Google Sheet with the service account email as Editor.
+6. Set env vars:
+	- `GOOGLE_SERVICE_ACCOUNT_EMAIL` = `client_email` from key JSON
+	- `GOOGLE_PRIVATE_KEY` = `private_key` from key JSON (keep `\n` escaped in env)
+	- `GOOGLE_SHEET_ID` = sheet ID from URL
+	- optional `GOOGLE_SHEET_RANGE` = e.g. `Sheet1!A:D`
+
+Columns appended by API route:
+
+1. Timestamp (ISO)
+2. Email
+3. Phone
+4. Source tag
+
+## Vercel deployment notes
+
+- Add all env vars in Vercel Project → Settings → Environment Variables.
+- Route handler uses Node runtime (`app/api/waitlist/route.ts`) for Nodemailer.
+- Deploy normally; no additional server setup needed.
+
+## If starting from a non-shadcn project
+
+If `components/ui` does not exist, create it to keep consistent imports (`@/components/ui/...`) and easier component generation with shadcn CLI.
+
+Quick setup commands:
+
+```bash
+npx create-next-app@latest . --typescript --tailwind --app
+npx shadcn@latest init -d
+```
